@@ -1,0 +1,22 @@
+---
+title: "Development of Package qzwslrm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Development of Package qzwslrm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(qzwslrm)
+```
+
+# Background
+As described in [Legarra and Reverter (2018)](https://link.springer.com/article/10.1186/s12711-018-0426-6), validation of predicted breeding values is becoming more and more important. Their work uses a cross-validation based approach using results of successive genetic evaluations. 
