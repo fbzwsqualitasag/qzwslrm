@@ -1,0 +1,31 @@
+---
+title: "Generate Test Data for qzwslrm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Generate Test Data for qzwslrm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, eval=FALSE}
+library(qzwslrm)
+```
+
+# Disclaimer
+The process of generating test data used in the package `qzwslrm` is documented.
+
+
+# Background
+The functionality implemented in `qzwslrm` is tested with a dataset that is generated using the simulation program `QMSim`. The parameter input for `QMSim` was taken from [Macedo et al (2020)](http://dx.doi.org/10.3168/jds.2019-16603) and was adapted. The main difference to the original input parameter is the reduction of the number of male and female animals per generation. To get smaller datafiles, the number of animals per generation was reduced by a factor of $100$. With the input parameters the simulation was started as shown below
+
+```{r}
+s_sim_param_path <- 
+```
+
