@@ -14,9 +14,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, eval=FALSE}
 library(qzwslrm)
 ```
 
 # Background
-As described in [Legarra and Reverter (2018)](https://link.springer.com/article/10.1186/s12711-018-0426-6), validation of predicted breeding values is becoming more and more important. Their work uses a cross-validation based approach using results of successive genetic evaluations. 
+As described in [Legarra and Reverter (2018)](https://link.springer.com/article/10.1186/s12711-018-0426-6), validation of predicted breeding values is becoming more and more important. Their work uses a cross-validation based approach using results of successive genetic evaluations. These results consist of $\hat{u}_p$ and $\hat{u}_w$ which are vectors of the same length and contain predicted breeding values based on "partial" ($p$) and "whole" ($w$) data, respectively. 
+
+
+# Cross-Validation Statistics
+The following statistics are computed based on the input $\hat{u}_p$ and $\hat{u}_w$
+
+* bias: $\overline{\hat{u}_p} - \overline{\hat{u}_w}$
+* regression of whole on partial: $b_{w,p} = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_p)}$
+* correlation between whole and partial: $r_{w,p} = \frac{cov(\hat{u}_w,\hat{u}_p)}{\sqrt{var(\hat{u}_p)var(\hat{u}_w)}}$
+* regression of partial on whole: $b_{p,w} = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_w)}$
+
+
