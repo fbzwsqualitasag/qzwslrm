@@ -19,13 +19,157 @@ library(qzwslrm)
 ```
 
 # Disclaimer
-The process of generating test data used in the package `qzwslrm` is documented.
+The process of generating test data used in the package `qzwslrm` is documented. The process of generating the data file and the pedigree is done only once and these files are then stored under the `extdata` directory of this package. Hence most of the following R-code chunks are not evaluated, but they are visible for documentation.
 
 
-# Background
+# Data Simulation
 The functionality implemented in `qzwslrm` is tested with a dataset that is generated using the simulation program `QMSim`. The parameter input for `QMSim` was taken from [Macedo et al (2020)](http://dx.doi.org/10.3168/jds.2019-16603) and was adapted. The main difference to the original input parameter is the reduction of the number of male and female animals per generation. To get smaller datafiles, the number of animals per generation was reduced by a factor of $100$. With the input parameters the simulation was started as shown below
 
-```{r}
-s_sim_param_path <- 
+```{r qmsim, eval=FALSE}
+s_prm_file <- "qzwslrm_test.prm"
+s_sim_param_path <- system.file("extdata", "qmsim", s_prm_file, package = "qzwslrm")
+qmsim_cmd <- paste("/qualstorzws01/data_projekte/linuxBin/QMSim", s_sim_param_path)
+system(command = qmsim_cmd)
 ```
+
+Reproducibility of the data simulation is provided by moving the seed file to the QMSim data directory.
+
+```{r, eval=FALSE}
+s_seed_path <- file.path(here::here(), "vignettes", "seed.prv")
+if (fs::file_exists(s_seed_path))
+  fs::file_move(s_seed_path, file.path(here::here(), "inst", "extdata", "qmsim"))
+```
+
+```{r, echo=FALSE}
+s_qmsim_phen_file <- "p1_data_001.txt"
+```
+
+# Phenotypic Data
+`QMSim` produces a number of output files. For the development and the tests of this package, we mainly require the phenotypic data store in a file called `r s_qmsim_phen_file`. This file is copied to the system files of this package
+
+```{r, eval=FALSE}
+qmsim_out_dir <- file.path(here::here(), "vignettes", paste0("r_", fs::path_ext_remove(s_prm_file)))
+s_phen_path <- file.path(qmsim_out_dir, s_qmsim_phen_file)
+qmsim_ext_dir <- file.path(here::here(), "inst", "extdata", "qmsim")
+fs::file_move(path = s_phen_path, new_path = qmsim_ext_dir)
+# remove old qmsim output directory
+fs::dir_delete(path = qmsim_out_dir)
+```
+
+
+# Prediction of Breeding Values
+The file with the phenotypic data is used to predict breeding values using `mix99`. Before we can run the analysis with `mix99`, the data must be prepared and re-formatted. 
+
+```{r, message=FALSE, warning=FALSE}
+s_qsim_data_path <- system.file("extdata", "qmsim", s_qmsim_phen_file, package = "qzwslrm")
+# read qmsim data
+tbl_qm_data <- readr::read_table(file = s_qsim_data_path, na = '---', guess_max = Inf)
+dim(tbl_qm_data)
+```
+
+## Generate Data for MiX99
+To create a phenotype input file for `mix99`, the data is filtered and a few columns are selected.
+
+```{r}
+library(dplyr)
+tbl_mix99_data <- tbl_qm_data %>%
+  filter(!is.na(Phen)) %>%
+  mutate(Sex = recode(Sex, `M` = 1, `F` = 2)) %>%
+  select(Progeny, Sex, Phen)
+```
+
+As checks, the number of records are reported here
+
+```{r}
+dim(tbl_mix99_data)
+```
+
+The first few lines of the selected data is shown
+
+```{r}
+head(tbl_mix99_data)
+```
+
+The phenotypic data is written to a file
+
+```{r, eval=FALSE}
+s_mix99_data_dir <- file.path(here::here(), "inst", "extdata", "mix99")
+if (!fs::dir_exists(s_mix99_data_dir)) fs::dir_create(path = s_mix99_data_dir)
+s_mix99_data_path <- file.path(s_mix99_data_dir, "p1_data_001.dat")
+readr::write_delim(tbl_mix99_data, file = s_mix99_data_path, delim = " ", col_names = FALSE)
+```
+
+
+## Generate Pedigree for MiX99
+From the QMSim data the pedigree is generated. 
+
+```{r, eval=TRUE}
+tbl_mix99_ped <- tbl_qm_data %>% 
+  select(Progeny, Sire, Dam)
+```
+
+Check the generated tibble
+
+```{r, eval=TRUE}
+dim(tbl_mix99_ped)
+```
+
+The first lines
+
+```{r, eval=TRUE}
+head(tbl_mix99_ped)
+```
+
+Write the pedigree to a file
+
+```{r, eval=FALSE}
+s_mix99_ped_path <- file.path(s_mix99_data_dir, "p1_data_001.ped")
+readr::write_delim(tbl_mix99_ped, file = s_mix99_ped_path, delim = " ", col_names = FALSE)
+```
+
+
+## Create CLIM File
+The CLIM file is the instruction file that is used by MiX99. In this file the phenotypes, the pedigree, the parameters and the model are specified.
+
+```{r, eval=FALSE}
+s_mix99_data_dir <- file.path(here::here(), "inst", "extdata", "mix99")
+s_mix99_clm_path <- file.path(s_mix99_data_dir, 'p1_data_001.clm')
+cat('#------------------------------------------------------------------\n', file = s_mix99_clm_path)
+cat('#                              CLIM\n', file = s_mix99_clm_path, append = TRUE)
+cat('#           Command file for a simple animal model analysis.\n', file = s_mix99_clm_path, append = TRUE)
+cat('#             MODEL:  phen = sex + animal\n', file = s_mix99_clm_path, append = TRUE)
+cat('#------------------------------------------------------------------\n', file = s_mix99_clm_path, append = TRUE)
+
+cat('DATAFILE  p1_data_001.dat        # Data file\n', file = s_mix99_clm_path, append = TRUE)
+cat('MISSING -99999.0        # Number for missing real number\n', file = s_mix99_clm_path, append = TRUE)
+
+cat('INTEGER   animal sex    # Integer column names\n', file = s_mix99_clm_path, append = TRUE)
+cat('REAL      phen          # Real column names\n', file = s_mix99_clm_path, append = TRUE)
+
+cat('PEDFILE   p1_data_001.ped        # Pedigree file\n', file = s_mix99_clm_path, append = TRUE)
+cat('PEDIGREE  animal am     # Genetics associated with animal code: am=animal model \n', file = s_mix99_clm_path, append = TRUE)
+
+cat('PARFILE   p1_data_001.var        # Variance component file\n', file = s_mix99_clm_path, append = TRUE)
+
+cat('PRECON b f              # Preconditioner: b=block\n', file = s_mix99_clm_path, append = TRUE)
+
+cat('MODEL\n', file = s_mix99_clm_path, append = TRUE)
+cat('  phen = sex animal # The model\n', file = s_mix99_clm_path, append = TRUE)
+```
+
+
+## Writing Parameter File
+The parameter file is the input file that contains the variance-covariance components.
+
+```{r, eval=FALSE}
+s_mix99_data_dir <- file.path(here::here(), "inst", "extdata", "mix99")
+s_mix99_var_path <- file.path(s_mix99_data_dir, 'p1_data_001.var')
+cat('1  1  1  0.1\n', file = s_mix99_var_path)
+cat('2  1  1  0.9\n', file = s_mix99_var_path, append = TRUE)
+```
+
+With all the above components, it should be possible to run predictions of breeding values using MiX99.
+
+
+
 
