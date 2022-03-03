@@ -62,8 +62,10 @@ The file with the phenotypic data is used to predict breeding values using `mix9
 
 ```{r, message=FALSE, warning=FALSE}
 s_qsim_data_path <- system.file("extdata", "qmsim", s_qmsim_phen_file, package = "qzwslrm")
+# count number of lines
+n_nr_lines <- as.integer(system(command = paste0("wc -l ", s_qsim_data_path, " | cut -d ' ' -f1", collapse = ""), intern = TRUE))
 # read qmsim data
-tbl_qm_data <- readr::read_table(file = s_qsim_data_path, na = '---', guess_max = Inf)
+tbl_qm_data <- readr::read_table(file = s_qsim_data_path, na = '---', guess_max = n_nr_lines)
 dim(tbl_qm_data)
 ```
 

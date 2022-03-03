@@ -9,6 +9,11 @@
 The goal of qzwslrm is to provide a set of tools that are useful for
 doing validations of predicted breeding values using the LR-Method.
 
+## Website
+
+The website of the package is available under:
+`https://fbzwsqualitasag.github.io/qzwslrm/`
+
 ## Installation
 
 You can install the development version of qzwslrm from
