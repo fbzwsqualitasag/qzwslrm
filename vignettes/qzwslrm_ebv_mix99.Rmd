@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
@@ -31,6 +32,51 @@ where the required parameters are specified in the so-called CLIM file `AM.clm`.
 
 
 # Example Data
+As described in a separate vignette on [Generating Test Data](https://fbzwsqualitasag.github.io/qzwslrm/articles/generate_qzwslrm_test_data.html) an example dataset is simulated using QMSim. The resulting simulation output is prepared to be analysed by MiX99. In order to have a simple pipeline for the analysis, the input data is copied into a working directory and from there the analysis is started.
+
+# Prepare MiX99 Input Files
+
+```{r, eval=TRUE}
+s_mix99_dir <- system.file("extdata", "mix99", package = "qzwslrm")
+list.files(path = s_mix99_dir)
+```
+
+The content of the directory `r s_mix99_dir` is copied into a working directory. This is done with the function `prepare_example_p1()` which returns the working directory to where the data files were copied
+
+```{r}
+s_mix99_work_dir <- prepare_example_p1()
+list.files(s_mix99_work_dir)
+```
+
+
+# Run MiX99
+As shown in the documentation, an evaluation with MiX99 is run in two steps. The first step runs `mix99i_pro` with the CLIM file as input. Then `mix99s_pro` solves the system of equations. The two commands are prepared and the program is run via the `system()` function. 
+
+```{r}
+s_clim_file <- "p1_data_001.clm"
+s_mix99_cmd <- paste0("cd ", s_mix99_work_dir, " && mix99i_pro ", s_clim_file, " && mix99s_pro -s ")
+vec_mix99_out <- system(command = s_mix99_cmd, intern = TRUE)
+```
+
+The output is captured in the character vector `vec_mix99_out`. This can be inspected by
+
+```{r}
+cat(paste0(head(vec_mix99_out), collapse = "\n"), "\n")
+```
+
+and 
+
+```{r}
+cat(paste0(tail(vec_mix99_out), collapse = "\n"), "\n")
+```
+
+
+
+# Clean Up Work Directory
+
+```{r}
+fs::dir_delete(path = s_mix99_work_dir)
+```
 
 
 
