@@ -1,0 +1,43 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# qzwslrm
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of qzwslrm is to provide a set of tools that are useful for doing validations of predicted breeding values using the LR-Method.
+
+## Installation
+
+You can install the development version of qzwslrm from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("fbzwsqualitasag/qzwslrm")
+```
+
+## Example
+
+The following example shows how a validation of a set of predicted breeding values can be run.
+
+```{r example, eval=FALSE}
+library(qzwslrm)
+## validation
+validate_ebv(pvec_ebv_partial = vec_ebv_partial, pvec_ebv_whole = vec_ebv_whole)
+```
+
+The above command shows the basic use case. There are more functions that can handle different use cases. 
+

@@ -20,6 +20,17 @@ The required steps to run the prediction of breeding values is documented.
 
 
 # MiX99
-Available versions of MiX99 are linked into the directory `/qualstorzws01/data_projekte/linuxBin`. 
+Available versions of MiX99 are linked into the directory `/qualstorzws01/data_projekte/linuxBin`. The latest version are available with the suffix `pro` attached to each of the commands. From the examples directory, the way how different analyses are run can be seen. The basic commands are
+
+```
+mix99i_pro AM.clm  > mix99i.log
+mix99s_pro -s      > mix99s.log
+```
+
+where the required parameters are specified in the so-called CLIM file `AM.clm`.
+
+
+# Example Data
+
 
 
