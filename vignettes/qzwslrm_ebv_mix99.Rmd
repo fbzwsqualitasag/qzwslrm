@@ -1,0 +1,25 @@
+---
+title: "Prediction of Breeding Values Using MiX99"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Prediction of Breeding Values Using MiX99}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# Disclaimer
+The required steps to run the prediction of breeding values is documented.
+
+
+# MiX99
+Available versions of MiX99 are linked into the directory `/qualstorzws01/data_projekte/linuxBin`. 
+
+
