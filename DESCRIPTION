@@ -17,4 +17,6 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Imports: 
-    log4r
+    readr,
+    log4r,
+    data.table

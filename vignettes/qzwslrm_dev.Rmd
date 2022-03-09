@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, eval=FALSE}
+```{r setup, eval=TRUE}
 library(qzwslrm)
 ```
 
@@ -30,4 +30,25 @@ The following statistics are computed based on the input $\hat{u}_p$ and $\hat{u
 * correlation between whole and partial: $r_{w,p} = \frac{cov(\hat{u}_w,\hat{u}_p)}{\sqrt{var(\hat{u}_p)var(\hat{u}_w)}}$
 * regression of partial on whole: $b_{p,w} = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_w)}$
 
+
+# Example Data
+As shown in https://fbzwsqualitasag.github.io/qzwslrm/articles/qzwslrm_ebv_mix99.html, example data are prepared to run the most basic validation statistics. The example data consists of two results files from MiX99 containing predicted breeding values. The first result file contains EBV predicted based on a complete dataset. 
+
+```{r}
+(s_ebv_path_whole <- qzwslrm_example('whole'))
+```
+
+The second result file contains EBV predicted for the same animals but based on a partial dataset. For our example, the phenotypic observations of all animals from the latest generation were set to missing (NA).
+
+```{r}
+(s_ebv_path_partial <- qzwslrm_example('partial'))
+```
+
+These files can be read using the function `read_solani()`
+
+```{r}
+(tbl_solani_whole <- readr_solani(ps_path = s_ebv_path_whole))
+```
+
+The same can be done with the partial data 
 
