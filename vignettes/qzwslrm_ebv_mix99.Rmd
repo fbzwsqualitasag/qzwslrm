@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = TRUE
 )
 ```
 
@@ -34,17 +34,20 @@ where the required parameters are specified in the so-called CLIM file `AM.clm`.
 # Example Data
 As described in a separate vignette on [Generating Test Data](https://fbzwsqualitasag.github.io/qzwslrm/articles/generate_qzwslrm_test_data.html) an example dataset is simulated using QMSim. The resulting simulation output is prepared to be analysed by MiX99. In order to have a simple pipeline for the analysis, the input data is copied into a working directory and from there the analysis is started.
 
+
 # Prepare MiX99 Input Files
+This section shows the manual preparation of the MiX99 input files. This can easier be done by using the package `qzwsmix99rt`. 
+
 
 ```{r, eval=TRUE}
-s_mix99_dir <- system.file("extdata", "mix99", package = "qzwslrm")
+s_mix99_dir <- system.file("extdata", "mix99", "p1_example", package = "qzwslrm")
 list.files(path = s_mix99_dir)
 ```
 
 The content of the directory `r s_mix99_dir` is copied into a working directory. This is done with the function `prepare_example_p1()` which returns the working directory to where the data files were copied
 
-```{r}
-s_mix99_work_dir <- prepare_example_p1()
+```{r, eval=FALSE}
+s_mix99_work_dir <- qzwslrm::prepare_example_p1()
 list.files(s_mix99_work_dir)
 ```
 
@@ -52,7 +55,7 @@ list.files(s_mix99_work_dir)
 # Run MiX99
 As shown in the documentation, an evaluation with MiX99 is run in two steps. The first step runs `mix99i_pro` with the CLIM file as input. Then `mix99s_pro` solves the system of equations. The two commands are prepared and the program is run via the `system()` function. 
 
-```{r}
+```{r, eval=FALSE}
 s_clim_file <- "p1_data_001.clm"
 s_mix99_cmd <- paste0("cd ", s_mix99_work_dir, " && mix99i_pro ", s_clim_file, " && mix99s_pro -s ")
 vec_mix99_out <- system(command = s_mix99_cmd, intern = TRUE)
@@ -60,13 +63,13 @@ vec_mix99_out <- system(command = s_mix99_cmd, intern = TRUE)
 
 The output is captured in the character vector `vec_mix99_out`. This can be inspected by
 
-```{r}
+```{r, eval=FALSE}
 cat(paste0(head(vec_mix99_out), collapse = "\n"), "\n")
 ```
 
 and 
 
-```{r}
+```{r, eval=FALSE}
 cat(paste0(tail(vec_mix99_out), collapse = "\n"), "\n")
 ```
 
@@ -74,9 +77,230 @@ cat(paste0(tail(vec_mix99_out), collapse = "\n"), "\n")
 
 # Clean Up Work Directory
 
-```{r}
-fs::dir_delete(path = s_mix99_work_dir)
+```{r, eval=FALSE}
+if (fs::dir_exists(path = s_mix99_work_dir)) fs::dir_delete(path = s_mix99_work_dir)
 ```
 
 
+# Data Preparation Using the Package `qzwsmix99rt`
+The package `qzwsmix99rt` can be used to convert QMSim output to MiX99 input for a simple animal model with `sex` as a fixed effect. If required, the model complexity can be extended.
+
+The first step is to check whether the package `qzwsmix99rt` is available. 
+
+```{r}
+# remove.packages("qzwsmix99rt")
+if (!is.element("qzwsmix99rt", installed.packages())) 
+  remotes::install_github(repo = "fbzwsqualitasag/qzwsmix99rt", dependencies = TRUE, upgrade = 'never')
+```
+
+
+## Conversion of QMSim Ouput to MiX99 Input
+The QMSim output file is given by
+
+```{r}
+(s_qm_out_path <- system.file("extdata", "qmsim", "p1_data_001.txt", package = "qzwslrm"))
+```
+
+The conversion is done by
+
+```{r}
+s_tmp_dir <- tempdir()
+s_out_dir_whole <- file.path(s_tmp_dir, 'mix99_work_whole_data')
+qzwsmix99rt::convert_qmsim_to_mix99(ps_qm_path = s_qm_out_path,
+                                    ps_out_dir = s_out_dir_whole,
+                                    pl_vcmp      = list(genetic_variance = 0.1, residual_variance = 0.9))
+```
+
+The output is checked with
+
+```{r}
+list.files(path = s_out_dir_whole)
+```
+
+
+## Run MiX99
+MiX99 was run on the created input files.
+
+```{r}
+qzwsmix99rt::run_mix99(ps_work_dir = s_out_dir_whole)
+```
+
+Check the results
+
+```{r}
+list.files(path = s_out_dir_whole)
+```
+
+The breeding values are stored in the result file "Solani". This file can be read with
+
+```{r}
+s_solani_path_whole <- file.path(s_out_dir_whole, "Solani")
+vec_col_names <- c("animal", "nrprg", "trait", "ebv")
+l_col_types <- readr::cols(animal = readr::col_integer(),
+                           nprg = readr::col_integer(),
+                           trait = readr::col_integer(),
+                           ebv = readr::col_double())
+tbl_solani_whole <- readr::read_table(file = s_solani_path_whole, col_names = vec_col_names, col_types = l_col_types)
+```
+
+```{r}
+df_solani_whole <- read.table(file = s_solani_path_whole, sep = "", header = FALSE)
+df_solani_whole[1:10,]
+```
+
+Comparing EBVs
+
+```{r}
+summary(df_solani_whole[,4])
+```
+
+```{r}
+sum(df_solani_whole[,4])
+```
+
+
+The different properties of the columns of the ebv result file is
+
+
+```{r}
+summary(tbl_solani_whole$ebv)
+```
+
+Depending on the contrast chosen or the restrictions, the sum should add up to $0$.
+
+```{r}
+sum(tbl_solani_whole$ebv)
+```
+
+Reading solani with `fread()`
+
+```{r}
+dt_solani_whole <- data.table::fread(file = s_solani_path_whole, header = FALSE)
+dt_solani_whole[1:10,]
+```
+
+```{r}
+summary(dt_solani_whole[,4])
+```
+
+```{r}
+sum(dt_solani_whole[,4])
+```
+
+
+# Partial Data
+In the partial data, we are setting all phenotypes from the last generation to missing and are predicting breeding values based on this reduced dataset. Based on the QMSim output, we have to determine which records have to be set to missing.
+
+```{r}
+tbl_qm_partial <- qzwsmix99rt::read_qmsim(ps_path = s_qm_out_path)
+tbl_qm_partial
+```
+
+The generation for each record is contained in 
+
+```{r}
+summary(tbl_qm_partial$G)
+```
+
+All animals from the last generation are set to missing in the phenotype column
+
+```{r}
+tbl_qm_partial[tbl_qm_partial$G == 10, ]
+```
+
+All phenotypes of these animals are set to missing.
+
+```{r}
+tbl_qm_partial[tbl_qm_partial$G == 10, ]$Phen <- NA
+tbl_qm_partial[tbl_qm_partial$G == 10, ]
+```
+
+This partial dataset is used for a prediction of breeding values with partial data.
+
+```{r}
+s_out_dir_partial <- file.path(s_tmp_dir, 'mix99_work_partial_data')
+qzwsmix99rt::convert_qmsim_to_mix99(ptbl_qm    = tbl_qm_partial,
+                                    ps_out_dir = s_out_dir_partial,
+                                    pl_vcmp    = list(genetic_variance = 0.1, residual_variance = 0.9))
+```
+
+Checking the content of the working directory for the partial dataset
+
+```{r}
+list.files(s_out_dir_partial)
+```
+
+
+Breeding values are predicted using
+
+```{r}
+qzwsmix99rt::run_mix99(ps_work_dir = s_out_dir_partial)
+```
+
+Checking the results
+
+```{r}
+list.files(s_out_dir_partial)
+```
+
+```{r}
+s_solani_path_partial <- file.path(s_out_dir_partial, "Solani")
+vec_col_names <- c("animal", "nrprg", "trait", "ebv")
+l_col_types <- readr::cols(animal = readr::col_integer(),
+                           nprg = readr::col_integer(),
+                           trait = readr::col_integer(),
+                           ebv = readr::col_double())
+tbl_solani_partial <- readr::read_table(file = s_solani_path_partial, col_names = vec_col_names, col_types = l_col_types)
+```
+
+The same type of statistics with the ebv from the partial data
+
+```{r}
+summary(tbl_solani_partial$ebv)
+```
+
+
+# Statistics based on the LR-Methods
+As a first preparatory, step, we extract the vector of ebv from the tibbles
+
+```{r}
+vec_ebv_p <- tbl_solani_partial$ebv
+vec_ebv_w <- tbl_solani_whole$ebv
+length(vec_ebv_p)
+length(vec_ebv_w)
+```
+
+The following statistics are computed
+
+* bias: $\overline{\hat{u}_p} - \overline{\hat{u}_w}$
+
+```{r}
+(n_bias <- mean(vec_ebv_p) - mean(vec_ebv_w))
+```
+
+* regression of whole on partial: $b_{w,p} = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_p)}$
+
+```{r}
+(n_reg_wp <- cov(vec_ebv_p, vec_ebv_w) / var(vec_ebv_p))
+```
+
+* correlation between whole and partial: $r_{w,p} = \frac{cov(\hat{u}_w,\hat{u}_p)}{\sqrt{var(\hat{u}_p)var(\hat{u}_w)}}$
+
+```{r}
+(n_cor_wp <- cor(vec_ebv_p, vec_ebv_w))
+```
+
+* regression of partial on whole: $b_{p,w} = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_w)}$
+
+```{r}
+(n_reg_pw <- cov(vec_ebv_p, vec_ebv_w) / var(vec_ebv_w))
+```
+
+
+
+# Clean Up Work Directory
+
+```{r}
+if (fs::dir_exists(path = s_tmp_dir)) fs::dir_delete(path = s_tmp_dir)
+```
 

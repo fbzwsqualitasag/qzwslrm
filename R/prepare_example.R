@@ -13,7 +13,7 @@
 #'
 #' @export prepare_example_p1
 prepare_example_p1 <- function(ps_work_dir   = file.path(tempdir(), "work_p1"),
-                               ps_source_dir = system.file("extdata", "mix99", package = "qzwslrm"),
+                               ps_source_dir = system.file("extdata", "mix99", "p1_example", package = "qzwslrm"),
                                pb_force      = FALSE,
                                pb_debug      = FALSE,
                                plogger       = NULL){
