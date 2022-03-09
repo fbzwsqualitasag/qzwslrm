@@ -31,9 +31,33 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/get_qzwslrm_logger.html</loc>
+  </url>
+  <url>
     <loc>/reference/hello.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/prepare_example_p1.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_debug.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_error.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_fatal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_info.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_level.html</loc>
+  </url>
+  <url>
+    <loc>/reference/qzwslrm_log_warn.html</loc>
   </url>
 </urlset>

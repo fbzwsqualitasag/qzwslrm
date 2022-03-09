@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">qzwslrm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,6 +97,406 @@ file <code>AM.clm</code>.</p>
 <div class="section level2">
 <h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
+<p>As described in a separate vignette on <a href="https://fbzwsqualitasag.github.io/qzwslrm/articles/generate_qzwslrm_test_data.html" class="external-link">Generating
+Test Data</a> an example dataset is simulated using QMSim. The resulting
+simulation output is prepared to be analysed by MiX99. In order to have
+a simple pipeline for the analysis, the input data is copied into a
+working directory and from there the analysis is started.</p>
+</div>
+<div class="section level2">
+<h2 id="prepare-mix99-input-files">Prepare MiX99 Input Files<a class="anchor" aria-label="anchor" href="#prepare-mix99-input-files"></a>
+</h2>
+<p>This section shows the manual preparation of the MiX99 input files.
+This can easier be done by using the package
+<code>qzwsmix99rt</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_mix99_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mix99"</span>, <span class="st">"p1_example"</span>, package <span class="op">=</span> <span class="st">"qzwslrm"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_mix99_dir</span><span class="op">)</span>
+<span class="co">#&gt; [1] "p1_data_001.clm" "p1_data_001.dat" "p1_data_001.ped" "p1_data_001.var"</span></code></pre></div>
+<p>The content of the directory
+/tmp/RtmpXfg5WZ/temp_libpath72356aceefa4/qzwslrm/extdata/mix99/p1_example
+is copied into a working directory. This is done with the function
+<code><a href="../reference/prepare_example_p1.html">prepare_example_p1()</a></code> which returns the working directory to
+where the data files were copied</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_mix99_work_dir</span> <span class="op">&lt;-</span> <span class="fu">qzwslrm</span><span class="fu">::</span><span class="fu"><a href="../reference/prepare_example_p1.html">prepare_example_p1</a></span><span class="op">(</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">s_mix99_work_dir</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="run-mix99">Run MiX99<a class="anchor" aria-label="anchor" href="#run-mix99"></a>
+</h2>
+<p>As shown in the documentation, an evaluation with MiX99 is run in two
+steps. The first step runs <code>mix99i_pro</code> with the CLIM file as
+input. Then <code>mix99s_pro</code> solves the system of equations. The
+two commands are prepared and the program is run via the
+<code><a href="https://rdrr.io/r/base/system.html" class="external-link">system()</a></code> function.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_clim_file</span> <span class="op">&lt;-</span> <span class="st">"p1_data_001.clm"</span>
+<span class="va">s_mix99_cmd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cd "</span>, <span class="va">s_mix99_work_dir</span>, <span class="st">" &amp;&amp; mix99i_pro "</span>, <span class="va">s_clim_file</span>, <span class="st">" &amp;&amp; mix99s_pro -s "</span><span class="op">)</span>
+<span class="va">vec_mix99_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span>command <span class="op">=</span> <span class="va">s_mix99_cmd</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>The output is captured in the character vector
+<code>vec_mix99_out</code>. This can be inspected by</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">vec_mix99_out</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">vec_mix99_out</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="clean-up-work-directory">Clean Up Work Directory<a class="anchor" aria-label="anchor" href="#clean-up-work-directory"></a>
+</h2>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_access.html" class="external-link">dir_exists</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_mix99_work_dir</span><span class="op">)</span><span class="op">)</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/delete.html" class="external-link">dir_delete</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_mix99_work_dir</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="data-preparation-using-the-package-qzwsmix99rt">Data Preparation Using the Package <code>qzwsmix99rt</code><a class="anchor" aria-label="anchor" href="#data-preparation-using-the-package-qzwsmix99rt"></a>
+</h2>
+<p>The package <code>qzwsmix99rt</code> can be used to convert QMSim
+output to MiX99 input for a simple animal model with <code>sex</code> as
+a fixed effect. If required, the model complexity can be extended.</p>
+<p>The first step is to check whether the package
+<code>qzwsmix99rt</code> is available.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># remove.packages("qzwsmix99rt")</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">is.element</a></span><span class="op">(</span><span class="st">"qzwsmix99rt"</span>, <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> 
+  <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"fbzwsqualitasag/qzwsmix99rt"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, upgrade <span class="op">=</span> <span class="st">'never'</span><span class="op">)</span></code></pre></div>
+<div class="section level3">
+<h3 id="conversion-of-qmsim-ouput-to-mix99-input">Conversion of QMSim Ouput to MiX99 Input<a class="anchor" aria-label="anchor" href="#conversion-of-qmsim-ouput-to-mix99-input"></a>
+</h3>
+<p>The QMSim output file is given by</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">s_qm_out_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"qmsim"</span>, <span class="st">"p1_data_001.txt"</span>, package <span class="op">=</span> <span class="st">"qzwslrm"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "/tmp/RtmpXfg5WZ/temp_libpath72356aceefa4/qzwslrm/extdata/qmsim/p1_data_001.txt"</span></code></pre></div>
+<p>The conversion is done by</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_tmp_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">s_out_dir_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_tmp_dir</span>, <span class="st">'mix99_work_whole_data'</span><span class="op">)</span>
+<span class="fu">qzwsmix99rt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qzwsmix99rt/man/convert_qmsim_to_mix99.html" class="external-link">convert_qmsim_to_mix99</a></span><span class="op">(</span>ps_qm_path <span class="op">=</span> <span class="va">s_qm_out_path</span>,
+                                    ps_out_dir <span class="op">=</span> <span class="va">s_out_dir_whole</span>,
+                                    pl_vcmp      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>genetic_variance <span class="op">=</span> <span class="fl">0.1</span>, residual_variance <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   Progeny = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Sire = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Dam = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Sex = <span style="color: #BB0000;">col_character()</span>,</span>
+<span class="co">#&gt;   G = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   NMPrg = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   NFPrg = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   F = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Homo = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Phen = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Res = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Polygene = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   QTL = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Final_EBV = <span style="color: #00BB00;">col_double()</span></span>
+<span class="co">#&gt; )</span></code></pre></div>
+<p>The output is checked with</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_out_dir_whole</span><span class="op">)</span>
+<span class="co">#&gt; [1] "20220309164659_mix99.clm" "20220309164659_mix99.dat"</span>
+<span class="co">#&gt; [3] "20220309164659_mix99.ped" "20220309164659_mix99.var"</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="run-mix99-1">Run MiX99<a class="anchor" aria-label="anchor" href="#run-mix99-1"></a>
+</h3>
+<p>MiX99 was run on the created input files.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">qzwsmix99rt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qzwsmix99rt/man/run_mix99.html" class="external-link">run_mix99</a></span><span class="op">(</span>ps_work_dir <span class="op">=</span> <span class="va">s_out_dir_whole</span><span class="op">)</span></code></pre></div>
+<p>Check the results</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_out_dir_whole</span><span class="op">)</span>
+<span class="co">#&gt;  [1] "20220309164659_mix99.clm" "20220309164659_mix99.dat"</span>
+<span class="co">#&gt;  [3] "20220309164659_mix99.ped" "20220309164659_mix99.var"</span>
+<span class="co">#&gt;  [5] "20220309164700_mix99.log" "ARlog"                   </span>
+<span class="co">#&gt;  [7] "Conlog"                   "Memlog"                  </span>
+<span class="co">#&gt;  [9] "MiX99_DIR.DIR"            "MiX99_IN.DIR"            </span>
+<span class="co">#&gt; [11] "MiX99_IN.OPT"             "MiX99.lst"               </span>
+<span class="co">#&gt; [13] "Modlog"                   "OK_mix99i"               </span>
+<span class="co">#&gt; [15] "OK_mix99s"                "original_blockcode.dat"  </span>
+<span class="co">#&gt; [17] "Parlog"                   "Resid.List"              </span>
+<span class="co">#&gt; [19] "Solani"                   "Solfix"                  </span>
+<span class="co">#&gt; [21] "Solvec"                   "Tm10.trco0"              </span>
+<span class="co">#&gt; [23] "Tmp0.para"                "Tmp1.code"               </span>
+<span class="co">#&gt; [25] "Tmp4.pedi0"               "Tmp5.clas0"              </span>
+<span class="co">#&gt; [27] "Tmp6.diab0"               "Tmp9.strc"               </span>
+<span class="co">#&gt; [29] "Tralog"</span></code></pre></div>
+<p>The breeding values are stored in the result file “Solani”. This file
+can be read with</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_solani_path_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_out_dir_whole</span>, <span class="st">"Solani"</span><span class="op">)</span>
+<span class="va">vec_col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"animal"</span>, <span class="st">"nrprg"</span>, <span class="st">"trait"</span>, <span class="st">"ebv"</span><span class="op">)</span>
+<span class="va">l_col_types</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html" class="external-link">cols</a></span><span class="op">(</span>animal <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           nprg <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           trait <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           ebv <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_double</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="va">tbl_solani_whole</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_table.html" class="external-link">read_table</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">s_solani_path_whole</span>, col_names <span class="op">=</span> <span class="va">vec_col_names</span>, col_types <span class="op">=</span> <span class="va">l_col_types</span><span class="op">)</span>
+<span class="co">#&gt; Warning: The following named parsers don't match the column names: nprg</span>
+<span class="co">#&gt; Warning: 3844 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                           file</span>
+<span class="co">#&gt;   1  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_whole_data/Solani'</span>
+<span class="co">#&gt;   2  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_whole_data/Solani'</span>
+<span class="co">#&gt;   3  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_whole_data/Solani'</span>
+<span class="co">#&gt;   4  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_whole_data/Solani'</span>
+<span class="co">#&gt;   6  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_whole_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ..............................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">df_solani_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">s_solani_path_whole</span>, sep <span class="op">=</span> <span class="st">""</span>, header <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">df_solani_whole</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
+<span class="co">#&gt;    V1 V2 V3         V4</span>
+<span class="co">#&gt; 1   1 10  1 -0.2142200</span>
+<span class="co">#&gt; 2   2 30  1  0.1096000</span>
+<span class="co">#&gt; 3   3 90  1  0.4845300</span>
+<span class="co">#&gt; 4   4 10  1 -0.1543200</span>
+<span class="co">#&gt; 5   5 20  1  0.0766110</span>
+<span class="co">#&gt; 6   6 20  1 -0.1354800</span>
+<span class="co">#&gt; 7   7 20  1 -0.0928440</span>
+<span class="co">#&gt; 8   8 10  1 -0.0059609</span>
+<span class="co">#&gt; 9   9 10  1 -0.0130210</span>
+<span class="co">#&gt; 10 10 60  1  0.1806400</span></code></pre></div>
+<p>Comparing EBVs</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">df_solani_whole</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class="co">#&gt; -0.3550  0.0847  0.2500  0.2556  0.4163  0.8965</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">df_solani_whole</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1276.597</span></code></pre></div>
+<p>The different properties of the columns of the ebv result file is</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tbl_solani_whole</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span>
+<span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class="co">#&gt; -0.3550  0.0847  0.2500  0.2556  0.4163  0.8965</span></code></pre></div>
+<p>Depending on the contrast chosen or the restrictions, the sum should
+add up to <span class="math inline">\(0\)</span>.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">tbl_solani_whole</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1276.597</span></code></pre></div>
+<p>Reading solani with <code>fread()</code></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dt_solani_whole</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">s_solani_path_whole</span>, header <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">dt_solani_whole</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
+<span class="co">#&gt;     V1 V2 V3         V4</span>
+<span class="co">#&gt;  1:  1 10  1 -0.2142200</span>
+<span class="co">#&gt;  2:  2 30  1  0.1096000</span>
+<span class="co">#&gt;  3:  3 90  1  0.4845300</span>
+<span class="co">#&gt;  4:  4 10  1 -0.1543200</span>
+<span class="co">#&gt;  5:  5 20  1  0.0766110</span>
+<span class="co">#&gt;  6:  6 20  1 -0.1354800</span>
+<span class="co">#&gt;  7:  7 20  1 -0.0928440</span>
+<span class="co">#&gt;  8:  8 10  1 -0.0059609</span>
+<span class="co">#&gt;  9:  9 10  1 -0.0130210</span>
+<span class="co">#&gt; 10: 10 60  1  0.1806400</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dt_solani_whole</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;        V4         </span>
+<span class="co">#&gt;  Min.   :-0.3550  </span>
+<span class="co">#&gt;  1st Qu.: 0.0847  </span>
+<span class="co">#&gt;  Median : 0.2500  </span>
+<span class="co">#&gt;  Mean   : 0.2556  </span>
+<span class="co">#&gt;  3rd Qu.: 0.4163  </span>
+<span class="co">#&gt;  Max.   : 0.8965</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">dt_solani_whole</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1276.597</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="partial-data">Partial Data<a class="anchor" aria-label="anchor" href="#partial-data"></a>
+</h2>
+<p>In the partial data, we are setting all phenotypes from the last
+generation to missing and are predicting breeding values based on this
+reduced dataset. Based on the QMSim output, we have to determine which
+records have to be set to missing.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbl_qm_partial</span> <span class="op">&lt;-</span> <span class="fu">qzwsmix99rt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qzwsmix99rt/man/read_qmsim.html" class="external-link">read_qmsim</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="va">s_qm_out_path</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   Progeny = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Sire = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Dam = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Sex = <span style="color: #BB0000;">col_character()</span>,</span>
+<span class="co">#&gt;   G = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   NMPrg = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   NFPrg = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   F = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Homo = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Phen = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Res = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Polygene = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   QTL = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   Final_EBV = <span style="color: #00BB00;">col_double()</span></span>
+<span class="co">#&gt; )</span>
+<span class="va">tbl_qm_partial</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,995 × 14</span></span>
+<span class="co">#&gt;    Progeny  Sire   Dam Sex       G NMPrg NFPrg     F  Homo  Phen   Res Polygene</span>
+<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>       1     0     0 M         0     4     6     0 0.701    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>       2     0     0 M         0    14    16     0 0.703    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>       3     0     0 M         0    35    55     0 0.693    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>       4     0     0 M         0     5     5     0 0.710    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>       5     0     0 M         0    12     8     0 0.694    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>       6     0     0 M         0     7    13     0 0.694    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>       7     0     0 M         0    13     7     0 0.704    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>       8     0     0 M         0     3     7     0 0.689    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>       9     0     0 M         0     5     5     0 0.699    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>      10     0     0 M         0    19    41     0 0.697    <span style="color: #BB0000;">NA</span>     0        0</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 4,985 more rows, and 2 more variables: QTL &lt;dbl&gt;, Final_EBV &lt;dbl&gt;</span></span></code></pre></div>
+<p>The generation for each record is contained in</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tbl_qm_partial</span><span class="op">$</span><span class="va">G</span><span class="op">)</span>
+<span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class="co">#&gt;   0.000   2.000   5.000   4.955   8.000  10.000</span></code></pre></div>
+<p>All animals from the last generation are set to missing in the
+phenotype column</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbl_qm_partial</span><span class="op">[</span><span class="va">tbl_qm_partial</span><span class="op">$</span><span class="va">G</span> <span class="op">==</span> <span class="fl">10</span>, <span class="op">]</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 450 × 14</span></span>
+<span class="co">#&gt;    Progeny  Sire   Dam Sex       G NMPrg NFPrg       F  Homo   Phen    Res</span>
+<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>    <span style="text-decoration: underline;">4</span>546  <span style="text-decoration: underline;">1</span>878  <span style="text-decoration: underline;">2</span>400 F        10     0     0 0.007<span style="text-decoration: underline;">81</span> 0.688 -<span style="color: #BB0000;">0.165</span> -<span style="color: #BB0000;">0.529</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>    <span style="text-decoration: underline;">4</span>547  <span style="text-decoration: underline;">4</span>452  <span style="text-decoration: underline;">1</span>757 M        10     0     0 0       0.706 <span style="color: #BB0000;">NA</span>      0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>    <span style="text-decoration: underline;">4</span>548  <span style="text-decoration: underline;">2</span>795  <span style="text-decoration: underline;">3</span>242 M        10     0     0 0.015<span style="text-decoration: underline;">6</span>  0.720 <span style="color: #BB0000;">NA</span>      0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>    <span style="text-decoration: underline;">4</span>549  <span style="text-decoration: underline;">3</span>229  <span style="text-decoration: underline;">3</span>911 F        10     0     0 0.026<span style="text-decoration: underline;">8</span>  0.719  0.499 -<span style="color: #BB0000;">0.576</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    <span style="text-decoration: underline;">4</span>550  <span style="text-decoration: underline;">4</span>545  <span style="text-decoration: underline;">4</span>265 F        10     0     0 0.034<span style="text-decoration: underline;">1</span>  0.695  1.91   1.16 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    <span style="text-decoration: underline;">4</span>551  <span style="text-decoration: underline;">4</span>497  <span style="text-decoration: underline;">2</span>332 F        10     0     0 0.020<span style="text-decoration: underline;">0</span>  0.717  0.300 -<span style="color: #BB0000;">0.340</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    <span style="text-decoration: underline;">4</span>552  <span style="text-decoration: underline;">2</span>762  <span style="text-decoration: underline;">3</span>135 M        10     0     0 0.012<span style="text-decoration: underline;">7</span>  0.699 <span style="color: #BB0000;">NA</span>      0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    <span style="text-decoration: underline;">4</span>553  <span style="text-decoration: underline;">4</span>330   312 F        10     0     0 0       0.699 -<span style="color: #BB0000;">1.11</span>  -<span style="color: #BB0000;">1.68</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    <span style="text-decoration: underline;">4</span>554  <span style="text-decoration: underline;">3</span>853  <span style="text-decoration: underline;">3</span>864 M        10     0     0 0.018<span style="text-decoration: underline;">9</span>  0.708 <span style="color: #BB0000;">NA</span>      0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    <span style="text-decoration: underline;">4</span>555  <span style="text-decoration: underline;">3</span>423  <span style="text-decoration: underline;">2</span>754 M        10     0     0 0.021<span style="text-decoration: underline;">5</span>  0.695 <span style="color: #BB0000;">NA</span>      0    </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 440 more rows, and 3 more variables: Polygene &lt;dbl&gt;, QTL &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   Final_EBV &lt;dbl&gt;</span></span></code></pre></div>
+<p>All phenotypes of these animals are set to missing.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbl_qm_partial</span><span class="op">[</span><span class="va">tbl_qm_partial</span><span class="op">$</span><span class="va">G</span> <span class="op">==</span> <span class="fl">10</span>, <span class="op">]</span><span class="op">$</span><span class="va">Phen</span> <span class="op">&lt;-</span> <span class="cn">NA</span>
+<span class="va">tbl_qm_partial</span><span class="op">[</span><span class="va">tbl_qm_partial</span><span class="op">$</span><span class="va">G</span> <span class="op">==</span> <span class="fl">10</span>, <span class="op">]</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 450 × 14</span></span>
+<span class="co">#&gt;    Progeny  Sire   Dam Sex       G NMPrg NFPrg       F  Homo  Phen    Res</span>
+<span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>    <span style="text-decoration: underline;">4</span>546  <span style="text-decoration: underline;">1</span>878  <span style="text-decoration: underline;">2</span>400 F        10     0     0 0.007<span style="text-decoration: underline;">81</span> 0.688    <span style="color: #BB0000;">NA</span> -<span style="color: #BB0000;">0.529</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>    <span style="text-decoration: underline;">4</span>547  <span style="text-decoration: underline;">4</span>452  <span style="text-decoration: underline;">1</span>757 M        10     0     0 0       0.706    <span style="color: #BB0000;">NA</span>  0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>    <span style="text-decoration: underline;">4</span>548  <span style="text-decoration: underline;">2</span>795  <span style="text-decoration: underline;">3</span>242 M        10     0     0 0.015<span style="text-decoration: underline;">6</span>  0.720    <span style="color: #BB0000;">NA</span>  0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>    <span style="text-decoration: underline;">4</span>549  <span style="text-decoration: underline;">3</span>229  <span style="text-decoration: underline;">3</span>911 F        10     0     0 0.026<span style="text-decoration: underline;">8</span>  0.719    <span style="color: #BB0000;">NA</span> -<span style="color: #BB0000;">0.576</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    <span style="text-decoration: underline;">4</span>550  <span style="text-decoration: underline;">4</span>545  <span style="text-decoration: underline;">4</span>265 F        10     0     0 0.034<span style="text-decoration: underline;">1</span>  0.695    <span style="color: #BB0000;">NA</span>  1.16 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    <span style="text-decoration: underline;">4</span>551  <span style="text-decoration: underline;">4</span>497  <span style="text-decoration: underline;">2</span>332 F        10     0     0 0.020<span style="text-decoration: underline;">0</span>  0.717    <span style="color: #BB0000;">NA</span> -<span style="color: #BB0000;">0.340</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    <span style="text-decoration: underline;">4</span>552  <span style="text-decoration: underline;">2</span>762  <span style="text-decoration: underline;">3</span>135 M        10     0     0 0.012<span style="text-decoration: underline;">7</span>  0.699    <span style="color: #BB0000;">NA</span>  0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    <span style="text-decoration: underline;">4</span>553  <span style="text-decoration: underline;">4</span>330   312 F        10     0     0 0       0.699    <span style="color: #BB0000;">NA</span> -<span style="color: #BB0000;">1.68</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    <span style="text-decoration: underline;">4</span>554  <span style="text-decoration: underline;">3</span>853  <span style="text-decoration: underline;">3</span>864 M        10     0     0 0.018<span style="text-decoration: underline;">9</span>  0.708    <span style="color: #BB0000;">NA</span>  0    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    <span style="text-decoration: underline;">4</span>555  <span style="text-decoration: underline;">3</span>423  <span style="text-decoration: underline;">2</span>754 M        10     0     0 0.021<span style="text-decoration: underline;">5</span>  0.695    <span style="color: #BB0000;">NA</span>  0    </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 440 more rows, and 3 more variables: Polygene &lt;dbl&gt;, QTL &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   Final_EBV &lt;dbl&gt;</span></span></code></pre></div>
+<p>This partial dataset is used for a prediction of breeding values with
+partial data.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_out_dir_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_tmp_dir</span>, <span class="st">'mix99_work_partial_data'</span><span class="op">)</span>
+<span class="fu">qzwsmix99rt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qzwsmix99rt/man/convert_qmsim_to_mix99.html" class="external-link">convert_qmsim_to_mix99</a></span><span class="op">(</span>ptbl_qm    <span class="op">=</span> <span class="va">tbl_qm_partial</span>,
+                                    ps_out_dir <span class="op">=</span> <span class="va">s_out_dir_partial</span>,
+                                    pl_vcmp    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>genetic_variance <span class="op">=</span> <span class="fl">0.1</span>, residual_variance <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Checking the content of the working directory for the partial
+dataset</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">s_out_dir_partial</span><span class="op">)</span>
+<span class="co">#&gt; [1] "20220309164701_mix99.clm" "20220309164701_mix99.dat"</span>
+<span class="co">#&gt; [3] "20220309164701_mix99.ped" "20220309164701_mix99.var"</span></code></pre></div>
+<p>Breeding values are predicted using</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">qzwsmix99rt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qzwsmix99rt/man/run_mix99.html" class="external-link">run_mix99</a></span><span class="op">(</span>ps_work_dir <span class="op">=</span> <span class="va">s_out_dir_partial</span><span class="op">)</span></code></pre></div>
+<p>Checking the results</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">s_out_dir_partial</span><span class="op">)</span>
+<span class="co">#&gt;  [1] "20220309164701_mix99.clm" "20220309164701_mix99.dat"</span>
+<span class="co">#&gt;  [3] "20220309164701_mix99.ped" "20220309164701_mix99.var"</span>
+<span class="co">#&gt;  [5] "20220309164702_mix99.log" "ARlog"                   </span>
+<span class="co">#&gt;  [7] "Conlog"                   "Memlog"                  </span>
+<span class="co">#&gt;  [9] "MiX99_DIR.DIR"            "MiX99_IN.DIR"            </span>
+<span class="co">#&gt; [11] "MiX99_IN.OPT"             "MiX99.lst"               </span>
+<span class="co">#&gt; [13] "Modlog"                   "OK_mix99i"               </span>
+<span class="co">#&gt; [15] "OK_mix99s"                "original_blockcode.dat"  </span>
+<span class="co">#&gt; [17] "Parlog"                   "Resid.List"              </span>
+<span class="co">#&gt; [19] "Solani"                   "Solfix"                  </span>
+<span class="co">#&gt; [21] "Solvec"                   "Tm10.trco0"              </span>
+<span class="co">#&gt; [23] "Tmp0.para"                "Tmp1.code"               </span>
+<span class="co">#&gt; [25] "Tmp4.pedi0"               "Tmp5.clas0"              </span>
+<span class="co">#&gt; [27] "Tmp6.diab0"               "Tmp9.strc"               </span>
+<span class="co">#&gt; [29] "Tralog"</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_solani_path_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_out_dir_partial</span>, <span class="st">"Solani"</span><span class="op">)</span>
+<span class="va">vec_col_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"animal"</span>, <span class="st">"nrprg"</span>, <span class="st">"trait"</span>, <span class="st">"ebv"</span><span class="op">)</span>
+<span class="va">l_col_types</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html" class="external-link">cols</a></span><span class="op">(</span>animal <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           nprg <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           trait <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_integer</a></span><span class="op">(</span><span class="op">)</span>,
+                           ebv <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html" class="external-link">col_double</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="va">tbl_solani_partial</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_table.html" class="external-link">read_table</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">s_solani_path_partial</span>, col_names <span class="op">=</span> <span class="va">vec_col_names</span>, col_types <span class="op">=</span> <span class="va">l_col_types</span><span class="op">)</span>
+<span class="co">#&gt; Warning: The following named parsers don't match the column names: nprg</span>
+<span class="co">#&gt; Warning: 3839 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                             file</span>
+<span class="co">#&gt;   1  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_partial_data/Solani'</span>
+<span class="co">#&gt;   2  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_partial_data/Solani'</span>
+<span class="co">#&gt;   3  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_partial_data/Solani'</span>
+<span class="co">#&gt;   4  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_partial_data/Solani'</span>
+<span class="co">#&gt;   6  -- 4 columns 5 columns '/tmp/RtmpNXhWzx/mix99_work_partial_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span></code></pre></div>
+<p>The same type of statistics with the ebv from the partial data</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tbl_solani_partial</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span>
+<span class="co">#&gt;     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span class="co">#&gt; -0.35504  0.08577  0.24813  0.24947  0.42129  0.74823</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="statistics-based-on-the-lr-methods">Statistics based on the LR-Methods<a class="anchor" aria-label="anchor" href="#statistics-based-on-the-lr-methods"></a>
+</h2>
+<p>As a first preparatory, step, we extract the vector of ebv from the
+tibbles</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vec_ebv_p</span> <span class="op">&lt;-</span> <span class="va">tbl_solani_partial</span><span class="op">$</span><span class="va">ebv</span>
+<span class="va">vec_ebv_w</span> <span class="op">&lt;-</span> <span class="va">tbl_solani_whole</span><span class="op">$</span><span class="va">ebv</span>
+<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vec_ebv_p</span><span class="op">)</span>
+<span class="co">#&gt; [1] 4995</span>
+<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vec_ebv_w</span><span class="op">)</span>
+<span class="co">#&gt; [1] 4995</span></code></pre></div>
+<p>The following statistics are computed</p>
+<ul>
+<li>bias: <span class="math inline">\(\overline{\hat{u}_p} -
+\overline{\hat{u}_w}\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">n_bias</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">vec_ebv_p</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">vec_ebv_w</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] -0.006104794</span></code></pre></div>
+<ul>
+<li>regression of whole on partial: <span class="math inline">\(b_{w,p}
+= \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_p)}\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">n_reg_wp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">vec_ebv_p</span>, <span class="va">vec_ebv_w</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">vec_ebv_p</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1.037712</span></code></pre></div>
+<ul>
+<li>correlation between whole and partial: <span class="math inline">\(r_{w,p} =
+\frac{cov(\hat{u}_w,\hat{u}_p)}{\sqrt{var(\hat{u}_p)var(\hat{u}_w)}}\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">n_cor_wp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">vec_ebv_p</span>, <span class="va">vec_ebv_w</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 0.987303</span></code></pre></div>
+<ul>
+<li>regression of partial on whole: <span class="math inline">\(b_{p,w}
+= \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_w)}\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">n_reg_pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">vec_ebv_p</span>, <span class="va">vec_ebv_w</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">vec_ebv_w</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 0.9393427</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="clean-up-work-directory-1">Clean Up Work Directory<a class="anchor" aria-label="anchor" href="#clean-up-work-directory-1"></a>
+</h2>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_access.html" class="external-link">dir_exists</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_tmp_dir</span><span class="op">)</span><span class="op">)</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/delete.html" class="external-link">dir_delete</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">s_tmp_dir</span><span class="op">)</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
