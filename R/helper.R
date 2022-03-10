@@ -4,16 +4,17 @@
 #' Return Path to Example Data
 #'
 #' @description
-#' Return path to example data
+#' Return path to example solani result file containing EBV from either whole
+#' or partial data.
 #'
 #' @param ps_data_type type of data set can be either 'partial' or 'whole'
 #'
 #' @return path to example data
-#' @export qzwslrm_example
+#' @export qzwslrm_example_solani
 #'
 #' @examples
-#' ed_path <- qzwslrm_example('partial')
-qzwslrm_example <- function(ps_data_type){
+#' ed_path <- qzwslrm_example_solani('partial')
+qzwslrm_example_solani <- function(ps_data_type){
   s_example_data_result <- NULL
   if (ps_data_type == 'partial'){
     s_example_data_result <- system.file("extdata", "mix99", "partial_data", "Solani", package = "qzwslrm")

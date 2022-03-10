@@ -16,6 +16,6 @@ DataTable with content of solani file
 The solani result file from MiX99 is read using `data.table::fread()`
 }
 \examples{
-s_ebv_path_partial <- system.file("extdata", "mix99", "partial_data", "Solani", package = "qzwslrm")
+s_ebv_path_partial <- qzwslrm_example_solani("partial")
 dt_solani <- fread_solani(ps_path = s_ebv_path_partial)
 }

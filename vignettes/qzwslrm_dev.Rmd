@@ -35,13 +35,13 @@ The following statistics are computed based on the input $\hat{u}_p$ and $\hat{u
 As shown in https://fbzwsqualitasag.github.io/qzwslrm/articles/qzwslrm_ebv_mix99.html, example data are prepared to run the most basic validation statistics. The example data consists of two results files from MiX99 containing predicted breeding values. The first result file contains EBV predicted based on a complete dataset. 
 
 ```{r}
-(s_ebv_path_whole <- qzwslrm_example('whole'))
+(s_ebv_path_whole <- qzwslrm_example_solani("whole"))
 ```
 
 The second result file contains EBV predicted for the same animals but based on a partial dataset. For our example, the phenotypic observations of all animals from the latest generation were set to missing (NA).
 
 ```{r}
-(s_ebv_path_partial <- qzwslrm_example('partial'))
+(s_ebv_path_partial <- qzwslrm_example_solani("partial"))
 ```
 
 These files can be read using the function `read_solani()`
@@ -51,4 +51,17 @@ These files can be read using the function `read_solani()`
 ```
 
 The same can be done with the partial data 
+
+```{r}
+(tbl_solani_partial <- readr_solani(ps_path = s_ebv_path_partial))
+```
+
+# Validation
+For the validation only the EBV vectors from the full and the partial data are required. Hence the validation function only needs the two vectors as input.
+
+```{r}
+(l_val_result <- val_ebv_lrm(pvec_ebv_partial = tbl_solani_partial$ebv, 
+                             pvec_ebv_whole = tbl_solani_whole$ebv))
+```
+
 

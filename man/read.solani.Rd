@@ -16,6 +16,6 @@ dataframe with content of solani file
 The function `read.table()` from R-base is used to read the solani file.
 }
 \examples{
-s_ebv_path_partial <- system.file("extdata", "mix99", "partial_data", "Solani", package = "qzwslrm")
+s_ebv_path_partial <- qzwslrm_example_solani("partial")
 df_solani <- read.solani(ps_path = s_ebv_path_partial)
 }

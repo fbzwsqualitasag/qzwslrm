@@ -26,6 +26,6 @@ The file Solani contains predicted breeding values computed by
 MiX99. This result file is read using `readr::read_table()`
 }
 \examples{
-s_ebv_path_partial <- system.file("extdata", "mix99", "partial_data", "Solani", package = "qzwslrm")
+s_ebv_path_partial <- qzwslrm_example_solani("partial")
 tbl_solani_partial <- readr_solani(ps_path = s_ebv_path_partial)
 }
