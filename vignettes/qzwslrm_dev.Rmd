@@ -65,3 +65,82 @@ For the validation only the EBV vectors from the full and the partial data are r
 ```
 
 
+# Other Input Formats
+For reasons of flexibility, EBV can be read from files having a number of different formats such as 'csv', 'csv2', 'delim' or 'table'. For testing purposes different input files are produced and stored inside of this package
+
+```{r, eval=FALSE}
+# csv
+s_pkg_input_dir <- file.path(here::here(), "inst", "extdata", "ebvinput")
+s_csv_input_path <- file.path(s_pkg_input_dir, "ebv_input.csv")
+readr::write_csv(tbl_solani_partial, file = s_csv_input_path)
+
+# csv2
+s_csv2_input_path <- file.path(s_pkg_input_dir, "ebv_input.csv2")
+readr::write_csv(tbl_solani_partial, file = s_csv2_input_path)
+
+# delim - .txt
+s_delim_input_path <- file.path(s_pkg_input_dir, "ebv_input.txt")
+readr::write_delim(tbl_solani_partial, file = s_delim_input_path, delim = " ")
+```
+
+The input files included in the package can be obtained and read via
+
+```{r}
+sexdf_csv <- qzwslrm_example_input("csv")
+tbl_ebv_csv <- readr_ebv(ps_path = sexdf_csv, ps_format = "csv", 
+                     ps_animal_col_name = "animal", ps_ebv_col_name = "ebv")
+tbl_ebv_csv
+```
+
+Testing the input format "table"
+
+```{r}
+sexdf_delim <- qzwslrm_example_input(ps_data_format = "delim")
+tbl_ebv_table <- readr_ebv(ps_path = sexdf_delim, ps_format = "table",
+                           ps_animal_col_name = "animal", ps_ebv_col_name = "ebv")
+tbl_ebv_table
+```
+
+The generic function `readr_ebv()` for reading ebv from input files can read data from files with different formats. Furthermore, the input files can contain more information than just EBV. But the result of the reader function is always a tibble with two columns. The first column contains the animal IDs and the second the EBV of the animal.
+
+
+# Summary Output
+The output of the validation function is formatted using a summary function `summary_lrm()`. 
+
+```{r}
+tbl_ebv_whole <- readr_ebv(ps_path = qzwslrm_example_solani("whole"), ps_format = "table",
+                            pn_ebv_col_idx = 4)
+tbl_ebv_partial <- readr_ebv(ps_path = qzwslrm_example_solani("partial"), ps_format = "table",
+                            pn_ebv_col_idx = 4)
+summary_lrm(l_val_result <- val_ebv_lrm(pvec_ebv_partial = tbl_ebv_partial$ebv, 
+                             pvec_ebv_whole = tbl_ebv_whole$ebv))
+```
+
+
+# Result Tibble
+The results can also be converted into a tibble. This can be useful for an output as a table
+
+```{r}
+ tbl_ebv_whole <- readr_ebv(ps_path = qzwslrm_example_solani("whole"), ps_format = "table",
+                            pn_ebv_col_idx = 4)
+ tbl_ebv_partial <- readr_ebv(ps_path = qzwslrm_example_solani("partial"), ps_format = "table",
+                              pn_ebv_col_idx = 4)
+ tibble_lrm(l_val_result <- val_ebv_lrm(pvec_ebv_partial = tbl_ebv_partial$ebv,
+                                         pvec_ebv_whole = tbl_ebv_whole$ebv))
+```
+
+
+# Scatterplots of EBV from Whole and Partial Data
+The function `scatterplot_lrm()` creates a scatterplot of the EBV from whole and partial data
+
+```{r, message=FALSE, warning=FALSE}
+tbl_ebv_whole <- readr_ebv(ps_path = qzwslrm_example_solani("whole"), ps_format = "table",
+                            pn_ebv_col_idx = 4)
+tbl_ebv_partial <- readr_ebv(ps_path = qzwslrm_example_solani("partial"), ps_format = "table",
+                              pn_ebv_col_idx = 4)
+p <- scatterplot_lrm(tbl_ebv_whole, tbl_ebv_partial)
+print(p)
+```
+
+The above plot shows a scatterplot of the ebv from whole data and partial data. The blue line is the linear smoothed regression line and the red line is the expected regression line with a slope of $1$. 
+

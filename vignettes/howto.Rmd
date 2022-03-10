@@ -1,0 +1,26 @@
+---
+title: "How To Use qzwslrm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How To Use qzwslrm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(qzwslrm)
+```
+
+# Disclaimer
+This is a short introduction on how to use the package `qzwslrm`.
+
+
+# Abstract
+The package `qzwslrm` implements the computation of the EBV validation using the LR-method. This requires two vectors with EBV for the same group of animals. 

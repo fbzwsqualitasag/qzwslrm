@@ -79,7 +79,9 @@ readr_ebv <- function(ps_path,
     n_ebv_col_idx <- which(ps_ebv_col_name == vec_col_names_result)
   }
   # select only columns for animal ID and ebv and return
-  return(tbl_ebv_result[,c(n_animal_col_idx, n_ebv_col_idx)])
+  tbl_ebv_result <- tbl_ebv_result[,c(n_animal_col_idx, n_ebv_col_idx)]
+  colnames(tbl_ebv_result) <- c("animal", "ebv")
+  return(tbl_ebv_result)
 
 }
 
