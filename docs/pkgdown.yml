@@ -3,7 +3,8 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   generate_qzwslrm_test_data: generate_qzwslrm_test_data.html
+  howto: howto.html
   qzwslrm_dev: qzwslrm_dev.html
   qzwslrm_ebv_mix99: qzwslrm_ebv_mix99.html
-last_built: 2022-03-09T15:46Z
+last_built: 2022-03-16T08:26Z
 

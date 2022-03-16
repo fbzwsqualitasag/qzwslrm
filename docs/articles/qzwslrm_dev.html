@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">qzwslrm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/generate_qzwslrm_test_data.html">Generate Test Data for qzwslrm</a>
+    <a class="dropdown-item" href="../articles/howto.html">How To Use qzwslrm</a>
     <a class="dropdown-item" href="../articles/qzwslrm_dev.html">Development of Package qzwslrm</a>
     <a class="dropdown-item" href="../articles/qzwslrm_ebv_mix99.html">Prediction of Breeding Values Using MiX99</a>
   </div>
@@ -107,6 +108,311 @@ same length and contain predicted breeding values based on “partial”
 = \frac{cov(\hat{u}_w,\hat{u}_p)}{var(\hat{u}_w)}\)</span>
 </li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a>
+</h2>
+<p>As shown in <a href="https://fbzwsqualitasag.github.io/qzwslrm/articles/qzwslrm_ebv_mix99.html" class="external-link uri">https://fbzwsqualitasag.github.io/qzwslrm/articles/qzwslrm_ebv_mix99.html</a>,
+example data are prepared to run the most basic validation statistics.
+The example data consists of two results files from MiX99 containing
+predicted breeding values. The first result file contains EBV predicted
+based on a complete dataset.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">s_ebv_path_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"whole"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani"</span></code></pre></div>
+<p>The second result file contains EBV predicted for the same animals
+but based on a partial dataset. For our example, the phenotypic
+observations of all animals from the latest generation were set to
+missing (NA).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">s_ebv_path_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"partial"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani"</span></code></pre></div>
+<p>These files can be read using the function
+<code>read_solani()</code></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">tbl_solani_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_solani.html">readr_solani</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="va">s_ebv_path_whole</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Warning: The following named parsers don't match the column names: nprg</span>
+<span class="co">#&gt; Warning: 3844 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                             file</span>
+<span class="co">#&gt;   1  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   2  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   3  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   4  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   6  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,995 × 4</span></span>
+<span class="co">#&gt;    animal nrprg trait      ebv</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1    10     1 -<span style="color: #BB0000;">0.214</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2    30     1  0.110  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3    90     1  0.485  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4    10     1 -<span style="color: #BB0000;">0.154</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5    20     1  0.076<span style="text-decoration: underline;">6</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6    20     1 -<span style="color: #BB0000;">0.135</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7    20     1 -<span style="color: #BB0000;">0.092</span><span style="color: #BB0000; text-decoration: underline;">8</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8    10     1 -<span style="color: #BB0000;">0.005</span><span style="color: #BB0000; text-decoration: underline;">96</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9    10     1 -<span style="color: #BB0000;">0.013</span><span style="color: #BB0000; text-decoration: underline;">0</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10    60     1  0.181  </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 4,985 more rows</span></span></code></pre></div>
+<p>The same can be done with the partial data</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">tbl_solani_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_solani.html">readr_solani</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="va">s_ebv_path_partial</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Warning: The following named parsers don't match the column names: nprg</span>
+<span class="co">#&gt; Warning: 3839 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                               file</span>
+<span class="co">#&gt;   1  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   2  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   3  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   4  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   6  -- 4 columns 5 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ..................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,995 × 4</span></span>
+<span class="co">#&gt;    animal nrprg trait      ebv</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1    10     1 -<span style="color: #BB0000;">0.215</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2    30     1  0.129  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3    90     1  0.463  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4    10     1 -<span style="color: #BB0000;">0.154</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5    20     1  0.077<span style="text-decoration: underline;">9</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6    20     1 -<span style="color: #BB0000;">0.136</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7    20     1 -<span style="color: #BB0000;">0.091</span><span style="color: #BB0000; text-decoration: underline;">3</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8    10     1 -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">20</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9    10     1 -<span style="color: #BB0000;">0.019</span><span style="color: #BB0000; text-decoration: underline;">8</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10    60     1  0.170  </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 4,985 more rows</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a>
+</h2>
+<p>For the validation only the EBV vectors from the full and the partial
+data are required. Hence the validation function only needs the two
+vectors as input.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="va">l_val_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/val_ebv_lrm.html">val_ebv_lrm</a></span><span class="op">(</span>pvec_ebv_partial <span class="op">=</span> <span class="va">tbl_solani_partial</span><span class="op">$</span><span class="va">ebv</span>, 
+                             pvec_ebv_whole <span class="op">=</span> <span class="va">tbl_solani_whole</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; $bias</span>
+<span class="co">#&gt; [1] -0.006104794</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $reg_wop</span>
+<span class="co">#&gt; [1] 1.037712</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $cor_wp</span>
+<span class="co">#&gt; [1] 0.987303</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $reg_pow</span>
+<span class="co">#&gt; [1] 0.9393427</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="other-input-formats">Other Input Formats<a class="anchor" aria-label="anchor" href="#other-input-formats"></a>
+</h2>
+<p>For reasons of flexibility, EBV can be read from files having a
+number of different formats such as ‘csv’, ‘csv2’, ‘delim’ or ‘table’.
+For testing purposes different input files are produced and stored
+inside of this package</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># csv</span>
+<span class="va">s_pkg_input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"inst"</span>, <span class="st">"extdata"</span>, <span class="st">"ebvinput"</span><span class="op">)</span>
+<span class="va">s_csv_input_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_pkg_input_dir</span>, <span class="st">"ebv_input.csv"</span><span class="op">)</span>
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">tbl_solani_partial</span>, file <span class="op">=</span> <span class="va">s_csv_input_path</span><span class="op">)</span>
+
+<span class="co"># csv2</span>
+<span class="va">s_csv2_input_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_pkg_input_dir</span>, <span class="st">"ebv_input.csv2"</span><span class="op">)</span>
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">tbl_solani_partial</span>, file <span class="op">=</span> <span class="va">s_csv2_input_path</span><span class="op">)</span>
+
+<span class="co"># delim - .txt</span>
+<span class="va">s_delim_input_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">s_pkg_input_dir</span>, <span class="st">"ebv_input.txt"</span><span class="op">)</span>
+<span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_delim</a></span><span class="op">(</span><span class="va">tbl_solani_partial</span>, file <span class="op">=</span> <span class="va">s_delim_input_path</span>, delim <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></code></pre></div>
+<p>The input files included in the package can be obtained and read
+via</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sexdf_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qzwslrm_example_input.html">qzwslrm_example_input</a></span><span class="op">(</span><span class="st">"csv"</span><span class="op">)</span>
+<span class="va">tbl_ebv_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="va">sexdf_csv</span>, ps_format <span class="op">=</span> <span class="st">"csv"</span>, 
+                     ps_animal_col_name <span class="op">=</span> <span class="st">"animal"</span>, ps_ebv_col_name <span class="op">=</span> <span class="st">"ebv"</span><span class="op">)</span>
+<span class="co">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">4995</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">4</span></span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; <span style="font-weight: bold;">Delimiter:</span> ","</span>
+<span class="co">#&gt; <span style="color: #00BB00;">dbl</span> (4): animal, nrprg, trait, ebv</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
+<span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
+<span class="va">tbl_ebv_csv</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,995 × 2</span></span>
+<span class="co">#&gt;    animal      ebv</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1 -<span style="color: #BB0000;">0.215</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2  0.129  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3  0.463  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4 -<span style="color: #BB0000;">0.154</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5  0.077<span style="text-decoration: underline;">9</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6 -<span style="color: #BB0000;">0.136</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7 -<span style="color: #BB0000;">0.091</span><span style="color: #BB0000; text-decoration: underline;">3</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8 -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">20</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9 -<span style="color: #BB0000;">0.019</span><span style="color: #BB0000; text-decoration: underline;">8</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10  0.170  </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 4,985 more rows</span></span></code></pre></div>
+<p>Testing the input format “table”</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sexdf_delim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qzwslrm_example_input.html">qzwslrm_example_input</a></span><span class="op">(</span>ps_data_format <span class="op">=</span> <span class="st">"delim"</span><span class="op">)</span>
+<span class="va">tbl_ebv_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="va">sexdf_delim</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                           ps_animal_col_name <span class="op">=</span> <span class="st">"animal"</span>, ps_ebv_col_name <span class="op">=</span> <span class="st">"ebv"</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   animal = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   nrprg = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   trait = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   ebv = <span style="color: #00BB00;">col_double()</span></span>
+<span class="co">#&gt; )</span>
+<span class="va">tbl_ebv_table</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,995 × 2</span></span>
+<span class="co">#&gt;    animal      ebv</span>
+<span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1 -<span style="color: #BB0000;">0.215</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2  0.129  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3  0.463  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4 -<span style="color: #BB0000;">0.154</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5  0.077<span style="text-decoration: underline;">9</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6 -<span style="color: #BB0000;">0.136</span>  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7 -<span style="color: #BB0000;">0.091</span><span style="color: #BB0000; text-decoration: underline;">3</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8 -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">20</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9 -<span style="color: #BB0000;">0.019</span><span style="color: #BB0000; text-decoration: underline;">8</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10  0.170  </span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 4,985 more rows</span></span></code></pre></div>
+<p>The generic function <code><a href="../reference/readr_ebv.html">readr_ebv()</a></code> for reading ebv from
+input files can read data from files with different formats.
+Furthermore, the input files can contain more information than just EBV.
+But the result of the reader function is always a tibble with two
+columns. The first column contains the animal IDs and the second the EBV
+of the animal.</p>
+</div>
+<div class="section level2">
+<h2 id="summary-output">Summary Output<a class="anchor" aria-label="anchor" href="#summary-output"></a>
+</h2>
+<p>The output of the validation function is formatted using a summary
+function <code><a href="../reference/summary_lrm.html">summary_lrm()</a></code>.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbl_ebv_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"whole"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                            pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   X1 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X2 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X3 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X4 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X5 = <span style="color: #BBBB00;">col_logical()</span></span>
+<span class="co">#&gt; )</span>
+<span class="co">#&gt; Warning: 1151 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                             file</span>
+<span class="co">#&gt;   5  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   7  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   8  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   9  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;  14  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+<span class="va">tbl_ebv_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"partial"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                            pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   X1 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X2 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X3 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X4 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X5 = <span style="color: #BBBB00;">col_logical()</span></span>
+<span class="co">#&gt; )</span>
+<span class="co">#&gt; Warning: 1156 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                               file</span>
+<span class="co">#&gt;   5  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   7  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   8  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   9  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;  14  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ..................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+<span class="fu"><a href="../reference/summary_lrm.html">summary_lrm</a></span><span class="op">(</span><span class="va">l_val_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/val_ebv_lrm.html">val_ebv_lrm</a></span><span class="op">(</span>pvec_ebv_partial <span class="op">=</span> <span class="va">tbl_ebv_partial</span><span class="op">$</span><span class="va">ebv</span>, 
+                             pvec_ebv_whole <span class="op">=</span> <span class="va">tbl_ebv_whole</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Bias between partial and whole:  -0.0061</span>
+<span class="co">#&gt; Regression whole on partial:         1.0377</span>
+<span class="co">#&gt; Correlation whole and partial:       0.9873</span>
+<span class="co">#&gt; Regression partial on whole:         0.9393</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="result-tibble">Result Tibble<a class="anchor" aria-label="anchor" href="#result-tibble"></a>
+</h2>
+<p>The results can also be converted into a tibble. This can be useful
+for an output as a table</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"> <span class="va">tbl_ebv_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"whole"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                            pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   X1 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X2 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X3 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X4 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X5 = <span style="color: #BBBB00;">col_logical()</span></span>
+<span class="co">#&gt; )</span>
+<span class="co">#&gt; Warning: 1151 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                             file</span>
+<span class="co">#&gt;   5  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   7  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   8  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;   9  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt;  14  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/whole_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+ <span class="va">tbl_ebv_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"partial"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                              pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   X1 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X2 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X3 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X4 = <span style="color: #00BB00;">col_double()</span>,</span>
+<span class="co">#&gt;   X5 = <span style="color: #BBBB00;">col_logical()</span></span>
+<span class="co">#&gt; )</span>
+<span class="co">#&gt; Warning: 1156 parsing failures.</span>
+<span class="co">#&gt; row col  expected    actual                                                                               file</span>
+<span class="co">#&gt;   5  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   7  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   8  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;   9  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt;  14  -- 5 columns 4 columns '/tmp/RtmpQ6Sl2w/temp_libpath1e0d2c67f2/qzwslrm/extdata/mix99/partial_data/Solani'</span>
+<span class="co">#&gt; ... ... ......... ......... ..................................................................................</span>
+<span class="co">#&gt; See problems(...) for more details.</span>
+ <span class="fu"><a href="../reference/tibble_lrm.html">tibble_lrm</a></span><span class="op">(</span><span class="va">l_val_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/val_ebv_lrm.html">val_ebv_lrm</a></span><span class="op">(</span>pvec_ebv_partial <span class="op">=</span> <span class="va">tbl_ebv_partial</span><span class="op">$</span><span class="va">ebv</span>,
+                                         pvec_ebv_whole <span class="op">=</span> <span class="va">tbl_ebv_whole</span><span class="op">$</span><span class="va">ebv</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 2</span></span>
+<span class="co">#&gt;   `Validation Statistic`           Value</span>
+<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bias between partial and whole -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">1</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Regression whole on partial     1.04  </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Correlation whole and partial   0.987 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Regression partial on whole     0.939</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="scatterplots-of-ebv-from-whole-and-partial-data">Scatterplots of EBV from Whole and Partial Data<a class="anchor" aria-label="anchor" href="#scatterplots-of-ebv-from-whole-and-partial-data"></a>
+</h2>
+<p>The function <code><a href="../reference/scatterplot_lrm.html">scatterplot_lrm()</a></code> creates a scatterplot of
+the EBV from whole and partial data</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbl_ebv_whole</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"whole"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                            pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="va">tbl_ebv_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readr_ebv.html">readr_ebv</a></span><span class="op">(</span>ps_path <span class="op">=</span> <span class="fu"><a href="../reference/qzwslrm_example_solani.html">qzwslrm_example_solani</a></span><span class="op">(</span><span class="st">"partial"</span><span class="op">)</span>, ps_format <span class="op">=</span> <span class="st">"table"</span>,
+                              pn_ebv_col_idx <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scatterplot_lrm.html">scatterplot_lrm</a></span><span class="op">(</span><span class="va">tbl_ebv_whole</span>, <span class="va">tbl_ebv_partial</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
+<p><img src="qzwslrm_dev_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p>The above plot shows a scatterplot of the ebv from whole data and
+partial data. The blue line is the linear smoothed regression line and
+the red line is the expected regression line with a slope of <span class="math inline">\(1\)</span>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -20,7 +20,7 @@ You can install the development version of qzwslrm from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+# if (!is.element("devtools", installed.packages()) install.packages("devtools")
 devtools::install_github("fbzwsqualitasag/qzwslrm")
 ```
 
