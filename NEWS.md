@@ -1,3 +1,7 @@
+# qzwslrm 0.1.2
+
+* Added HowTo vignette
+
 # qzwslrm 0.1.1
 
 * Data preparation finished
