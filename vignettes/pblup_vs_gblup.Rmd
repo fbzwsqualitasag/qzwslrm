@@ -1,0 +1,55 @@
+---
+title: "Consider Marker Information as New Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Consider Marker Information as New Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "bibliography.bib"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+s_bib_path <- "bibliography.bib"
+met <- rmdhelp::MendeleyExportToolR6$new()
+met$set_local_bib_file(ps_local_bib_file = s_bib_path)
+```
+
+```{r setup}
+library(qzwslrm)
+```
+
+## Disclaimer
+The comparison between PBLUP and GBLUP evaluation is described in this document. In the paper `r met$add("Legarra2018")` available at https://link.springer.com/article/10.1186/s12711-018-0426-6, this special comparison is explained on page 10.
+
+
+## Background
+The addition of marker data to a pedigree based evaluation which corresponds to moving from a PBLUP to a (SS)GBLUP evaluation can also be viewed as having more data. Thus a way to check the increase in accuracy caused by the addition of marker data in a genetic evaluation is to view the data with marker information as the "whole" dataset and the data without marker as the "partial" dataset. 
+
+Using subscript $G$ to refer to EBV based on data with marker information and $A$ to EBV based on data without markers, this yields
+
+$$\rho_{A,G} = \frac{\left( \hat{\mathbf{u}}_A - \overline{\hat{\mathbf{u}}}_A  \right)^T
+                     \left( \hat{\mathbf{u}}_G - \overline{\hat{\mathbf{u}}}_G\right)}
+                     {\sqrt{\left( \hat{\mathbf{u}}_A - \overline{\hat{\mathbf{u}}}_A  \right)^T
+                     \left( \hat{\mathbf{u}}_A - \overline{\hat{\mathbf{u}}}_A\right)
+                     \left( \hat{\mathbf{u}}_G - \overline{\hat{\mathbf{u}}}_G  \right)^T
+                     \left( \hat{\mathbf{u}}_G - \overline{\hat{\mathbf{u}}}_G\right)}} 
+
+= \frac{acc_A}{acc_G}
+$$
+
+This assumes $Cov(\hat{\mathbf{u}}_G, \hat{\mathbf{u}}_A) =  Var(\hat{\mathbf{u}}_A)$ which has formally been proven only for a single marker that was fitted as a correlated trait (`r met$add("Legarra2015a")`). The procedure above uses the same phenotypes for evaluations with either $G$ or $A$. An alternative approach might be to compare the increase in accuracy from partial to whole in both in both approaches. In this case the following procedure is proposed
+
+1. Compute EBV with all data ("whole") with the method that is deemed to be optimal which is assumed to be GBLUP
+2. Choose a cutoff date and create a partial dataset by setting all phenotypes after the cutoff to missing
+3. Compute GEBV based on partial data using GBLUP
+4. 
+
+
+```{r, echo=FALSE, results='asis'}
+if (knitr::is_html_output()) cat("## References\n")
+```
+

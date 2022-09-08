@@ -1,0 +1,45 @@
+@Article{Legarra2015a,
+  abstract = {Background: In pedigreed populations with a major gene segregating for a quantitative trait, it is not clear how to use pedigree, genotype and phenotype information when some individuals are not genotyped. We propose to consider gene content at the major gene as a second trait correlated to the quantitative trait, in a gene content multiple-trait best linear unbiased prediction (GCMTBLUP) method. Results: The genetic covariance between the trait and gene content at the major gene is a function of the substitution effect of the gene. This genetic covariance can be written in a multiple-trait form that accommodates any pattern of missing values for either genotype or phenotype data. Effects of major gene alleles and the genetic covariance between genotype at the major gene and the phenotype can be estimated using standard EM-REML or Gibbs sampling. Prediction of breeding values with genotypes at the major gene can use multiple-trait BLUP software. Major genes with more than two alleles can be considered by including negative covariances between gene contents at each different allele. We simulated two scenarios: a selected and an unselected trait with heritabilities of 0.05 and 0.5, respectively. In both cases, the major gene explained half the genetic variation. Competing methods used imputed gene contents derived by the method of Gengler et al. or by iterative peeling. Imputed gene contents, in contrast to GCMTBLUP, do not consider information on the quantitative trait for genotype prediction. GCMTBLUP gave unbiased estimates of the gene effect, in contrast to the other methods, with less bias and better or equal accuracy of prediction. GCMTBLUP improved estimation of genotypes in non-genotyped individuals, in particular if these individuals had own phenotype records and the trait had a high heritability. Ignoring the major gene in genetic evaluation led to serious biases and decreased prediction accuracy. Conclusions: CGMTBLUP is the best linear predictor of additive genetic merit including pedigree, phenotype, and genotype information at major genes, since it considers missing genotypes. Simulations confirm that it is a simple, efficient and theoretically sound method for genetic evaluation of traits influenced by polygenic inheritance and one or several major genes.},
+  author = {Andr{\a'e}s Legarra and Zulma G. Vitezica},
+  doi = {10.1186/s12711-015-0165-x},
+  file = {:Users/pvr/Library/Application Support/Mendeley Desktop/Downloaded/Legarra, Vitezica - 2015 - Genetic evaluation with major genes and polygenic inheritance when some animals are not genotyped using gene.pdf:pdf},
+  issn = {12979686},
+  journal = {Genetics Selection Evolution},
+  number = {1},
+  pages = {1--12},
+  pmid = {26576649},
+  publisher = {BioMed Central},
+  title = {{Genetic evaluation with major genes and polygenic inheritance when some animals are not genotyped using gene content multiple-trait BLUP}},
+  volume = {47},
+  year = {2015},
+}
+
+@Article{Legarra2018,
+  abstract = {Background: Cross-validation tools are used increasingly to validate and compare genetic evaluation methods but analytical properties of cross-validation methods are rarely described. There is also a lack of cross-validation tools for complex problems such as prediction of indirect effects (e.g. maternal effects) or for breeding schemes with small progeny group sizes. Results: We derive the expected value of several quadratic forms by comparing genetic evaluations including {"}partial{"} and {"}whole{"} data. We propose statistics that compare genetic evaluations including {"}partial{"} and {"}whole{"} data based on differences in means, covariance, and correlation, and term the use of these statistics {"}method LR{"} (from linear regression). Contrary to common belief, the regression of true on estimated breeding values is (on expectation) lower than 1 for small or related validation sets, due to family structures. For validation sets that are sufficiently large, we show that these statistics yield estimators of bias, slope or dispersion, and population accuracy for estimated breeding values. Similar results hold for prediction of future phenotypes although we show that estimates of bias, slope or dispersion using prediction of future phenotypes are sensitive to incorrect heritabilities or precorrection for fixed effects. We present an example for a set of 2111 Brahman beef cattle for which, in repeated partitioning of the data into training and validation sets, there is very good agreement of statistics of method LR with prediction of future phenotypes. Conclusions: Analytical properties of cross-validation measures are presented. We present a new method named LR for cross-validation that is automatic, easy to use, and which yields the quantities of interest. The method compares predictions based on partial and whole data, which results in estimates of accuracy and biases. Prediction of observed records may yield biased results due to precorrection or use of incorrect heritabilities.},
+  annote = {Compare prediction of whole and reduced dataset to get estimates of accuracy and biases.
+
+- tools needed not only to know goodness of an evaluation but also to compare model choices and quality
+- bases on cross-validation test based on focal animals (where focal can be all population or subgroups)
+
+Accuracy: cov(EBV,TBV)/sqrt(var(EBV)*var(TBV))
+Bias:mean(TBV)-mean(EBV)
+Dispersion:slope of regression of TBV on EBV
+
+- needs large number of animals (several hundreds at least and of multiple half-sibs families},
+  author = {Andres Legarra and Antonio Reverter},
+  doi = {10.1186/s12711-018-0426-6},
+  file = {:Users/pvr/Library/Application Support/Mendeley Desktop/Downloaded/Legarra, Reverter - 2018 - Semi-parametric estimates of population accuracy and bias of predictions of breeding values and future phenot.pdf:pdf},
+  issn = {12979686},
+  journal = {Genetics Selection Evolution},
+  keywords = {Agriculture,Animal Genetics and Genomics,Evolutionary Biology,LR-Method,Single Step Validation},
+  mendeley-tags = {LR-Method,Single Step Validation},
+  month = {nov},
+  number = {1},
+  pages = {1--18},
+  pmid = {30400768},
+  publisher = {BioMed Central Ltd.},
+  title = {{Semi-parametric estimates of population accuracy and bias of predictions of breeding values and future phenotypes using the LR method}},
+  url = {https://link.springer.com/article/10.1186/s12711-018-0426-6},
+  volume = {50},
+  year = {2018},
+}

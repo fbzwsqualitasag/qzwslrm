@@ -70,7 +70,7 @@ For reasons of flexibility, EBV can be read from files having a number of differ
 
 ```{r, eval=FALSE}
 # csv
-s_pkg_input_dir <- file.path(here::here(), "inst", "extdata", "ebvinput")
+s_pkg_input_dir <- system.file("extdata", "ebvinput", package = "qzwslrm")
 s_csv_input_path <- file.path(s_pkg_input_dir, "ebv_input.csv")
 readr::write_csv(tbl_solani_partial, file = s_csv_input_path)
 
